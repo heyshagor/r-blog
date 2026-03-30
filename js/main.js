@@ -5,7 +5,11 @@ function initParticles(id = 'particles', count = 30) {
   const container = document.getElementById(id);
   if (!container) return;
 
-  for (let i = 0; i < count; i++) {
+  // Reduce particles on mobile for better performance
+  const isMobile = window.innerWidth <= 768;
+  const adjustedCount = isMobile ? Math.floor(count * 0.6) : count;
+
+  for (let i = 0; i < adjustedCount; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     p.style.left = Math.random() * 100 + '%';
@@ -25,13 +29,17 @@ function initFlames(id = 'flames', count = 20) {
   const container = document.getElementById(id);
   if (!container) return;
 
-  for (let i = 0; i < count; i++) {
+  // Reduce flames on mobile for better performance
+  const isMobile = window.innerWidth <= 768;
+  const adjustedCount = isMobile ? Math.floor(count * 0.6) : count;
+
+  for (let i = 0; i < adjustedCount; i++) {
     const f = document.createElement('div');
     f.className = 'flame';
     f.style.left = Math.random() * 100 + '%';
     f.style.setProperty('--fd', (1.5 + Math.random() * 2.5) + 's');
     f.style.setProperty('--fdel', (Math.random() * 4) + 's');
-    const w = 3 + Math.random() * 10;
+    const w = isMobile ? 2 + Math.random() * 8 : 3 + Math.random() * 10;
     f.style.width = w + 'px';
     f.style.background = Math.random() > 0.5
       ? 'linear-gradient(180deg,transparent,#c0392b,#e67e22)'
@@ -160,8 +168,51 @@ async function loadPost() {
   }
 }
 
+// ── THEME TOGGLE ──
+function initThemeToggle() {
+  const toggle = document.getElementById('theme-toggle');
+  if (!toggle) return;
+
+  // Check for saved theme - default is dark (no attribute needed)
+  const savedTheme = localStorage.getItem('theme');
+
+  // Apply saved theme if it exists
+  if (savedTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  // If no saved theme, default is dark (no attribute set)
+
+  // Set initial icon
+  updateThemeIcon(savedTheme || 'dark');
+
+  // Toggle on click
+  toggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+    if (newTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.removeItem('theme');
+    }
+    updateThemeIcon(newTheme);
+  });
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.querySelector('#theme-toggle .theme-icon');
+  if (icon) {
+    // In dark mode (default), show moon icon to indicate switching to light
+    // In light mode, show sun icon to indicate switching to dark
+    icon.textContent = theme === 'light' ? '☀️' : '🌙';
+  }
+}
+
 // ── INITIALIZE ──
 document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
   initParticles('particles', window.location.pathname.includes('post.html') ? 25 : 35);
   initFlames('flames', window.location.pathname.includes('post.html') ? 18 : 22);
 
