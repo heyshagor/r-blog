@@ -88,7 +88,7 @@ async function loadPosts() {
     }
 
     grid.innerHTML = posts.map((p, i) => `
-      <a class="post-card" href="/blog/post.html?slug=${encodeURIComponent(p.slug)}" style="--delay:${i * 0.08}s">
+      <a class="post-card" href="/r-blog/post.html?slug=${encodeURIComponent(p.slug)}" style="--delay:${i * 0.08}s">
         <div class="card-top">
           <div class="card-title">${escHtml(p.title)}</div>
           <div class="card-arrow">→</div>
